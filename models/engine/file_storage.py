@@ -48,6 +48,18 @@ class FileStorage:
         with open(self.__file_path, 'w') as f:
             json.dump(json_objects, f)
 
+    def get(self, cls, id):
+        """Retrieves one object by ID in the current database session"""
+        if cls not in classes.values():
+            return None
+
+        # select * cls
+        all_cls = self.all(cls)
+        for value in all_cls.values():
+            if (value.id == id):
+                return value
+        return None
+
     def reload(self):
         """deserializes the JSON file to __objects"""
         try:
@@ -55,7 +67,7 @@ class FileStorage:
                 jo = json.load(f)
             for key in jo:
                 self.__objects[key] = classes[jo[key]["__class__"]](**jo[key])
-        except:
+        except Exception:
             pass
 
     def delete(self, obj=None):
@@ -64,6 +76,16 @@ class FileStorage:
             key = obj.__class__.__name__ + '.' + obj.id
             if key in self.__objects:
                 del self.__objects[key]
+
+    def count(self, cls=None):
+        """Returns the number of objects in storage matching the given class"""
+        if cls is not None:
+            nb = 0
+            for key, value in self.__objects.items():
+                if (cls == value.__class__ or cls == value.__class__.__name__):
+                    nb += 1
+            return nb
+        return len(self.all())
 
     def close(self):
         """call reload() method for deserializing the JSON file to objects"""
