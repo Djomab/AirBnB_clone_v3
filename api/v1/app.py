@@ -2,7 +2,7 @@
 """App module"""
 
 from models import storage
-from flask import Flask
+from flask import Flask, jsonify
 from api.v1.views import app_views
 from os import environ
 
@@ -16,6 +16,12 @@ app.register_blueprint(app_views)
 def teardown_db(self):
     """Teardown database"""
     storage.close()
+
+
+@app.errorhandler(404)
+def not_found(e):
+    """Not found route handler"""
+    return jsonify({"error": "Not found"})
 
 
 if __name__ == '__main__':
