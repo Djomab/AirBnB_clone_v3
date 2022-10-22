@@ -9,7 +9,7 @@ from models.state import State
 
 
 @app_views.route('/states/<state_id>/cities', methods=['GET', 'POST'],
-    strict_slashes=False)
+                 strict_slashes=False)
 def get_or_post_cities(state_id):
     """Retrieves or create cities"""
     output = []
@@ -33,7 +33,7 @@ def get_or_post_cities(state_id):
 
 
 @app_views.route('/cities/<city_id>', methods=['GET', 'DELETE', 'PUT'],
-    strict_slashes=False)
+                 strict_slashes=False)
 def get_delete_put_city(city_id):
     """Retrieves, deletes or updates a City object"""
     city = storage.get(City, city_id)
@@ -53,4 +53,3 @@ def get_delete_put_city(city_id):
             setattr(city, key, value)
         city.save()
         return (jsonify(city.to_dict()), 200)
-    
