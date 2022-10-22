@@ -59,6 +59,10 @@ class DBStorage:
         """commit all changes of the current database session"""
         self.__session.commit()
 
+    def get(self, cls, id):
+        """Retrieves one object by ID in the current database session"""
+        return self.__session.query(cls).get(id)
+
     def delete(self, obj=None):
         """delete from the current database session obj if not None"""
         if obj is not None:
@@ -70,6 +74,12 @@ class DBStorage:
         sess_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         Session = scoped_session(sess_factory)
         self.__session = Session
+
+    def count(self, cls=None):
+        """Returns the number of objects in storage matching the given class"""
+        if cls is not None:
+            return self.__session.query(cls).count()
+        return len(self.all())
 
     def close(self):
         """call remove() method on the private session attribute"""
