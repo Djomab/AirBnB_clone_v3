@@ -2,7 +2,7 @@
 """City handers module"""
 
 from api.v1.views import app_views
-from flask import jsonify, abort, request
+from flask import jsonify, abort, request, make_response
 from models import storage
 from models.city import City
 from models.state import State
@@ -52,4 +52,4 @@ def get_delete_put_city(city_id):
         for key, value in data.items():
             setattr(city, key, value)
         city.save()
-        return (jsonify(city.to_dict()), 200)
+        return (make_response(jsonify(city.to_dict())), 200)
