@@ -40,7 +40,7 @@ def get_delete_put_user(user_id):
     if request.method == 'GET':
         return jsonify(user.to_dict())
     if request.method == 'DELETE':
-        storage.delete(User, user_id)
+        storage.delete(user)
         storage.save()
         return make_response(jsonify({}), 200)
     if request.method == 'PUT':
