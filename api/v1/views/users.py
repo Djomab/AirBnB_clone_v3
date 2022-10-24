@@ -46,7 +46,7 @@ def get_delete_put_user(user_id):
     if request.method == 'DELETE':
         storage.delete(user)
         storage.save()
-        return make_response(jsonify({}), 200)
+        return (jsonify({}), 200)
     if request.method == 'PUT':
         if not request.is_json:
             abort(400, 'Not a JSON')
@@ -54,4 +54,4 @@ def get_delete_put_user(user_id):
         for key, value in data.items():
             setattr(user, key, value)
         user.save()
-        return make_response(jsonify(user.to_dict()), 200)
+        return (make_response(jsonify(user.to_dict())), 200)
