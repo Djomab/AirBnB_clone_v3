@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """Users handers module"""
 
+from logging import exception
 from api.v1.views import app_views
 from flask import jsonify, abort, request, make_response
 from models import storage
@@ -20,7 +21,10 @@ def get_or_post_users():
     if request.method == 'POST':
         if not request.is_json:
             abort(400, description='Not a JSON')
-        data = request.get_json()
+        try:
+            data = request.get_json()
+        except Exception as e:
+            print(e)
         if data.get('email') is None:
             abort(400, description='Missing email')
         if data.get('password') is None:
@@ -47,7 +51,7 @@ def get_delete_put_user(user_id):
         if not request.is_json:
             abort(400, 'Not a JSON')
         data = request.get_json()
-        for key, value in data.get_items():
+        for key, value in data.items():
             setattr(user, key, value)
         user.save()
         return make_response(jsonify(user.to_dict()), 200)
