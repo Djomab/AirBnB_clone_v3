@@ -12,7 +12,7 @@ from models.user import User
 
 @app_views.route('/places/<place_id>/reviews', methods=['GET', 'POST'],
                  strict_slashes=False)
-def get_or_post_places(place_id):
+def get_or_post_reviews(place_id):
     """Retrieves or create reviews"""
     output = []
     place = storage.get(Place, place_id)
@@ -43,7 +43,7 @@ def get_or_post_places(place_id):
 
 @app_views.route('/reviews/<review_id>', methods=['GET', 'DELETE', 'PUT'],
                  strict_slashes=False)
-def get_delete_put_city(review_id):
+def get_delete_put_review(review_id):
     """Retrieves, deletes or updates a Review object"""
     review = storage.get(Review, review_id)
     if review is None:
