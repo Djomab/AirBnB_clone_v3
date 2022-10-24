@@ -12,26 +12,23 @@ from models.user import User
                  strict_slashes=False)
 def get_or_post_users():
     """Retrieves or create users"""
-    if request.method == 'GET':
-        users = storage.all('User').values()
-        output = []
+    output = []
+    users = storage.all(User).values()
+    if request.method == "GET":
         for user in users:
             output.append(user.to_dict())
-        return jsonify(output)
-    if request.method == 'POST':
+        return (jsonify(output))
+    if request.method == "POST":
+        data = request.get_json()
         if not request.is_json:
-            abort(400, description='Not a JSON')
-        try:
-            data = request.get_json()
-        except Exception as e:
-            print(e)
-        if data.get('email') is None:
-            abort(400, description='Missing email')
-        if data.get('password') is None:
-            abort(400, description='Missing password')
+            abort(400, description="Not a JSON")
+        if 'email' not in request.json:
+            abort(400, description="Missing email")
+        if 'password' not in request.json:
+            abort(400, description="Missing password")
         user = User(**data)
         user.save()
-        return jsonify(user.to_dict())
+        return (jsonify(user.to_dict()), 201)
 
 
 @app_views.route('/users/<user_id>', methods=['GET', 'DELETE', 'PUT'],
@@ -41,19 +38,18 @@ def get_delete_put_user(user_id):
     user = storage.get(User, user_id)
     if user is None:
         abort(404)
-    if request.method == "GET":
-        output = user.to_dict()
-        return (jsonify(output))
-    if request.method == "PUT":
-        data = request.get_json()
-        if not request.is_json:
-            abort(400, description="Not a JSON")
-        for key, value in data.items():
-            setattr(user, key, value)
-        user.save()
-        return (jsonify(user.to_dict()), 200)
-    if request.method == "DELETE":
+    if request.method == 'GET':
+        return jsonify(user.to_dict())
+    if request.method == 'DELETE':
         storage.delete(user)
         storage.save()
-        result = make_response(jsonify({}), 200)
-        return result
+        return (jsonify({}), 200)
+    if request.method == 'PUT':
+        if not request.is_json:
+            abort(400, 'Not a JSON')
+        data = request.get_json()
+        for key, value in data.items():
+            if key not in ['id', 'created_at', 'updated_at']:
+                setattr(user, key, value)
+        user.save()
+        return (make_response(jsonify(user.to_dict())), 200)
