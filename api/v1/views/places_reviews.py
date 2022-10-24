@@ -7,6 +7,7 @@ from models import storage
 from models.city import City
 from models.review import Review
 from models.place import Place
+from models.user import User
 
 
 @app_views.route('/places/<place_id>/reviews', methods=['GET', 'POST'],
@@ -18,7 +19,7 @@ def get_or_post_places(place_id):
     if place is None:
         abort(404)
     if request.method == 'GET':
-        for review in place.places:
+        for review in place.reviews:
             print(review)
             output.append(review.to_dict())
         return jsonify(output)
@@ -26,9 +27,13 @@ def get_or_post_places(place_id):
         if not request.is_json:
             abort(400, description="Not a JSON")
         data = request.get_json()
-        if data.get('user_id') is None:
+        if 'user_id' not in request.json:
             abort(400, description='Missing user_id')
-        if data.get('text') is None:
+        user_id = data['user_id']
+        user = storage.get(User, user_id)
+        if user is None:
+            abort(404)
+        if 'text' not in request.json:
             abort(400, description='Missing text')
         data['place_id'] = place_id
         review = Review(**data)
