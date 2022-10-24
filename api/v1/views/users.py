@@ -6,6 +6,7 @@ from flask import jsonify, abort, request, make_response
 from models import storage
 from models.user import User
 
+
 @app_views.route('/users', methods=['GET', 'POST'],
                  strict_slashes=False)
 def get_or_post_users():
@@ -27,6 +28,7 @@ def get_or_post_users():
         user = User(**data)
         user.save()
         return jsonify(user.to_dict())
+
 
 @app_views.route('/users/<user_id>', methods=['GET', 'DELETE', 'PUT'],
                  strict_slashes=False)
