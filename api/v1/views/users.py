@@ -32,7 +32,7 @@ def get_or_post_users():
 
 @app_views.route('/users/<user_id>', methods=['GET', 'DELETE', 'PUT'],
                  strict_slashes=False)
-def get_delete_put_city(user_id):
+def get_delete_put_user(user_id):
     """Retrieves, deletes or updates a User object"""
     user = storage.get(User, user_id)
     if user is None:
