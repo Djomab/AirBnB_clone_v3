@@ -12,7 +12,7 @@ from models.user import User
 def get_or_post_users():
     """Retrieves or create users"""
     if request.method == 'GET':
-        users = storage.all('State').values()
+        users = storage.all('User').values()
         output = []
         for user in users:
             output.append(user.to_dict())
