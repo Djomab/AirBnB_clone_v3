@@ -52,6 +52,7 @@ def get_delete_put_user(user_id):
             abort(400, 'Not a JSON')
         data = request.get_json()
         for key, value in data.items():
-            setattr(user, key, value)
+            if key not in ['id', 'created_at', 'updated_at']:
+                setattr(user, key, value)
         user.save()
         return (make_response(jsonify(user.to_dict())), 200)

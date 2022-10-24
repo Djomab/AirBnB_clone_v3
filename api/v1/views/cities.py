@@ -51,7 +51,6 @@ def get_delete_put_city(city_id):
             abort(400, 'Not a JSON')
         data = request.get_json()
         for key, value in data.items():
-            if key not in ['id', 'created_at', 'updated_at']:
-                setattr(city, key, value)
+            setattr(city, key, value)
         city.save()
         return (make_response(jsonify(city.to_dict())), 200)
