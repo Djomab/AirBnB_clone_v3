@@ -7,6 +7,7 @@ from flask import abort, jsonify, make_response, request
 from models import storage
 from models.city import City
 from models.place import Place
+from models.user import User
 
 
 @app_views.route('/cities/<city_id>/places',
@@ -47,19 +48,33 @@ def delete_place(place_id):
     return make_response(jsonify({}), 200)
 
 
-@app_views.route('/places/',
+@app_views.route('/cities/<city_id>/places/',
                  methods=['POST'],
                  strict_slashes=False)
-def create_place():
+def create_place(city_id):
     """Creates a Place object"""
+    city = storage.get(City, city_id)
+
+    if not city:
+        abort(404)
+
     if not request.get_json():
         return abort(400, "Not a JSON")
 
     if 'name' not in request.get_json():
         abort(400, "Missing name")
 
+    if 'user_id' not in request.get_json():
+        abort(400, "Missing user_id")
+
     data = request.get_json()
+    user = storage.get(User, data['user_id'])
+
+    if not user:
+        abort(404)
+
     instance = Place(**data)
+    instance.city_id = city_id
     instance.save()
 
     return make_response(jsonify(instance.to_dict()), 201)
@@ -78,7 +93,7 @@ def update_place(place_id):
     if not request.get_json():
         abort(400, description="Not a JSON")
 
-    ignore = ['id', 'created_at', 'updated_at']
+    ignore = ['id', 'user_id', 'city_id', 'created_at', 'updated_at']
 
     data = request.get_json()
     for key, value in data.items():
