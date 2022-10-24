@@ -41,18 +41,19 @@ def get_delete_put_user(user_id):
     user = storage.get(User, user_id)
     if user is None:
         abort(404)
-    if request.method == 'GET':
-        return jsonify(user.to_dict())
-    if request.method == 'DELETE':
+    if request.method == "GET":
+        output = user.to_dict()
+        return (jsonify(output))
+    if request.method == "PUT":
+        data = request.get_json()
+        if not request.is_json:
+            abort(400, description="Not a JSON")
+        for key, value in data.items():
+            setattr(user, key, value)
+        user.save()
+        return (jsonify(user.to_dict()), 200)
+    if request.method == "DELETE":
         storage.delete(user)
         storage.save()
-        return (jsonify({}), 200)
-    if request.method == 'PUT':
-        if not request.is_json:
-            abort(400, 'Not a JSON')
-        data = request.get_json()
-        for key, value in data.items():
-            if key not in ['id', 'created_at', 'updated_at']:
-                setattr(user, key, value)
-        user.save()
-        return (make_response(jsonify(user.to_dict())), 200)
+        result = make_response(jsonify({}), 200)
+        return result
