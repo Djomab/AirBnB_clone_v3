@@ -20,7 +20,6 @@ def get_or_post_reviews(place_id):
         abort(404)
     if request.method == 'GET':
         for review in place.reviews:
-            print(review)
             output.append(review.to_dict())
         return jsonify(output)
     if request.method == 'POST':

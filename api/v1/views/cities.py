@@ -18,7 +18,6 @@ def get_or_post_cities(state_id):
         abort(404)
     if request.method == 'GET':
         for city in state.cities:
-            print(city)
             output.append(city.to_dict())
         return jsonify(output)
     if request.method == 'POST':
