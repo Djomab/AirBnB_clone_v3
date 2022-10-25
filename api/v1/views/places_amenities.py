@@ -25,7 +25,6 @@ def get_places_amenities(place_id):
         output = []
         for amety_id in place.amety_ids:
             output.append(storage.get(Amenity, amety_id).to_dict())
-    
     return jsonify(output)
 
 
