@@ -26,30 +26,30 @@ def get_places_amenities(place_id):
                  methods=['POST', 'DELETE'], strict_slashes=False)
 def delete_or_post_amenities(place_id, amenity_id):
     """Deletes or creates amenities"""
-    place = storage.get(Place, place_id)
-    amenity = storage.get(Amenity, amenity_id)
-    if place is None:
-        abort(404)
-    if amenity is None:
-        abort(404)
-    if STORAGE_TYPE == 'db':
-        if amenity not in place.aminities:
-            abort(404)
-        if request.method == 'DELETE':
-            place.amenities.remove(amenity)
-            res_obj = (jsonify({}), 200)
-        if request.method == 'POST':
-            place.amenities.append(amenity)
-            place.save()
-            res_obj = (jsonify(place.to_dict()), 201)
-    else:
-        if amenity.id not in place.amenity_ids:
-            abort(404)
-        if request.method == 'DELETE':
-            place.amenity_ids.remove(amenity.id)
-            res_obj = (jsonify({}), 200)
-        if request.method == 'POST':
-            place.amenity_ids.append(amenity.id)
-            place.save()
-            res_obj = (jsonify(place.to_dict()), 201)
-    return res_obj
+    place_obj = storage.get('Place', place_id)
+    amenity_obj = storage.get('Amenity', amenity_id)
+    if place_obj is None:
+        abort(404, 'Not found')
+    if amenity_obj is None:
+        abort(404, 'Not found')
+
+    if request.method == 'DELETE':
+        if (amenity_obj not in place_obj.amenities and
+                amenity_obj.id not in place_obj.amenities):
+            abort(404, 'Not found')
+        if STORAGE_TYPE == 'db':
+            place_obj.amenities.remove(amenity_obj)
+        else:
+            place_obj.amenity_ids.pop(amenity_obj.id, None)
+        place_obj.save()
+        return jsonify({}), 200
+
+    if request.method == 'POST':
+        if (amenity_obj in place_obj.amenities or
+                amenity_obj.id in place_obj.amenities):
+            return jsonify(amenity_obj.to_json()), 200
+        if STORAGE_TYPE == 'db':
+            place_obj.amenities.append(amenity_obj)
+        else:
+            place_obj.amenities = amenity_obj
+        return jsonify(amenity_obj.to_json()), 201
