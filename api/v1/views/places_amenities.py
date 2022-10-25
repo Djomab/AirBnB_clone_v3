@@ -19,6 +19,13 @@ def get_places_amenities(place_id):
         abort(404)
     amenities = place.amities if STORAGE_TYPE == 'db' else place.amity_ids
     output = [amenity.to_dict() for amenity in amenities]
+    if STORAGE_TYPE == 'db':
+        output = [amenity.to_dict() for amenity in place.amenities]
+    else:
+        output = []
+        for amety_id in place.amety_ids:
+            output.append(storage.get(Amenity, amety_id).to_dict())
+    
     return jsonify(output)
 
 
