@@ -125,12 +125,14 @@ def places_search():
                 places.append(place)
     if city_ids:
         cities = [storage.get(City, city_id) for city_id in city_ids]
-        [places.extend(city.places) for city in cities if city]
+        for city in cities:
+            [places.append(p) for p in city.places if city and p not in places]
     if state_ids:
         for state_id in state_ids:
             state = storage.get(State, state_id)
-            for city in state.cities:
-                [places.append(p) for p in city.places if p not in places]
+            if state:
+                for city in state.cities:
+                    [places.append(p) for p in city.places if p not in places]
     output = [place.to_dict() for place in places]
     return make_response(jsonify(output))
 
