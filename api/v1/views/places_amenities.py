@@ -50,7 +50,7 @@ def delete_or_post_amenities(place_id, amenity_id):
         if amenity.id not in place.amenity_ids:
             abort(404)
         if request.method == 'DELETE':
-            if amenity not in place.aminities:
+            if amenity not in place.aminity_ids:
                 abort(404)
             place.amenity_ids.remove(amenity.id)
             res_obj = (jsonify({}), 200)
