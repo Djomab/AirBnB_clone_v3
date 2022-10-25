@@ -33,23 +33,33 @@ def delete_or_post_amenities(place_id, amenity_id):
     if amenity is None:
         abort(404)
     if STORAGE_TYPE == 'db':
-        if amenity not in place.aminities:
-            abort(404)
         if request.method == 'DELETE':
+            if amenity not in place.aminities:
+                abort(404)
             place.amenities.remove(amenity)
             res_obj = (jsonify({}), 200)
         if request.method == 'POST':
-            place.amenities.append(amenity)
-            place.save()
-            res_obj = (jsonify(amenity.to_dict()), 201)
+            if amenity not in place.amenities:
+                place.amenities.append(amenity)
+                place.save()
+                status_code = 201
+            else:
+                status_code = 200
+            res_obj = (jsonify(amenity.to_dict()), status_code)
     else:
         if amenity.id not in place.amenity_ids:
             abort(404)
         if request.method == 'DELETE':
+            if amenity not in place.aminities:
+                abort(404)
             place.amenity_ids.remove(amenity.id)
             res_obj = (jsonify({}), 200)
         if request.method == 'POST':
-            place.amenity_ids.append(amenity.id)
-            place.save()
-            res_obj = (jsonify(amenity.to_dict()), 201)
+            if amenity.id not in place.amenity_ids:
+                place.amenity_ids.append(amenity.id)
+                place.save()
+                status_code = 201
+            else:
+                status_code = 200
+            res_obj = (jsonify(amenity.to_dict()), status_code)
     return res_obj
