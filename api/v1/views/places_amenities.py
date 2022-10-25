@@ -1,14 +1,13 @@
 #!/usr/bin/python3
 """Places amenities handers module"""
 
-from api.v1.views import app_views
+from api.v1.views import amenities, app_views
 from flask import jsonify, abort, request, make_response
 from models import storage
 from models.amenity import Amenity
 from models.place import Place
 from models.user import User
 from os import getenv
-STORAGE_IS_DB = (getenv('HBNB_TYPE_STORAGE') == 'db')
 STORAGE_TYPE = getenv('HBNB_TYPE_STORAGE')
 
 
@@ -18,7 +17,8 @@ def get_places_amenities(place_id):
     place = storage.get(Place, place_id)
     if place is None:
         abort(404)
-    output = [amenity.to_dict() for amenity in place.amenities]
+    amenities = place.amities if STORAGE_TYPE == 'db' else place.amity_ids
+    output = [amenity.to_dict() for amenity in amenities]
     return jsonify(output)
 
 
